@@ -202,6 +202,9 @@
                         </folder>
                     </items>
                 </folder>
+                <folder label="%tree.administer.node.name" icon="#folder_admin" description="Maintenance/Settings">
+                    <treeContribution category="connectionEditor"/>
+                </folder>
                 <folder id="securityManagement" label="%tree.security.node.name" icon="#security"
                         description="Security management">
                     <folder type="org.jkiss.dbeaver.ext.dameng.model.DamengUser" label="%tree.users.node.name"
