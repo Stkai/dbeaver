@@ -13,3 +13,5 @@ Bundle-Vendor: DBeaver Corp
 Bundle-Localization: OSGI-INF/l10n/bundle
 Automatic-Module-Name: org.jkiss.dbeaver.ext.dameng
 Export-Package: org.jkiss.dbeaver.ext.dameng.model
+Export-Package: org.jkiss.dbeaver.ext.dameng.model,
+ org.jkiss.dbeaver.ext.dameng.model.session

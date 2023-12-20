@@ -234,6 +234,9 @@
                         </items>
                     </folder>
                 </folder>
+                <folder label="%tree.administer.node.name" icon="#folder_admin" description="Maintenance/Settings">
+                    <treeContribution category="connectionEditor"/>
+                </folder>
             </tree>
 
             <drivers managable="true">
