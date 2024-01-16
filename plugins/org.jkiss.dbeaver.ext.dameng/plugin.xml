@@ -170,7 +170,7 @@
                         <folder type="org.jkiss.dbeaver.ext.dameng.model.DamengSequence"
                                 label="%tree.sequences.node.name"
                                 icon="#sequences" description="%tree.sequences.node.tip">
-                            <items label="%tree.sequence.node.name" path="sequence" property="sequences"
+                            <items label="%tree.sequence.node.name" path="sequence" property="damengSequences"
                                    icon="#sequence"/>
                         </folder>
                         <folder id="databaseTrigger" type="org.jkiss.dbeaver.ext.generic.model.GenericContainerTrigger"

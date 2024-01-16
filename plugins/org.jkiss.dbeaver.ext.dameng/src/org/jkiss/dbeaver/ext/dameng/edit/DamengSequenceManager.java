@@ -79,14 +79,43 @@ public class DamengSequenceManager extends GenericSequenceManager {
     }
 
     @Override
-    protected void addObjectModifyActions(
-        @NotNull DBRProgressMonitor monitor,
-        @NotNull DBCExecutionContext executionContext,
-        @NotNull List<DBEPersistAction> actionList,
-        @NotNull SQLObjectEditor<GenericSequence, GenericStructContainer>.ObjectChangeCommand command,
-        @NotNull Map<String, Object> options
-    ) {
-        DamengSequence sequence = (DamengSequence) command.getObject();
-        actionList.add(new SQLDatabasePersistAction("Alter Sequence", sequence.buildStatement(true)));
+    protected void addObjectModifyActions(DBRProgressMonitor monitor, DBCExecutionContext executionContext, List<DBEPersistAction> actionList, SQLObjectEditor<GenericSequence, DamengSchema>.ObjectChangeCommand command, Map<String, Object> options) throws DBException {
+        actionList.add(new SQLDatabasePersistAction("Alter Sequence", buildStatement(command.getObject(), false)
+        ));
+    }
+
+    @Override
+    protected void addObjectDeleteActions(DBRProgressMonitor monitor, DBCExecutionContext executionContext, List<DBEPersistAction> actions, SQLObjectEditor<GenericSequence, DamengSchema>.ObjectDeleteCommand command, Map<String, Object> options) throws DBException {
+        actions.add(
+                new SQLDatabasePersistAction("Drop sequence", "DROP SEQUENCE " + command.getObject().getFullyQualifiedName(DBPEvaluationContext.DDL))
+        );
+    }
+
+    public String buildStatement(GenericSequence sequence, boolean forUpdate) {
+        Number incrementBy = sequence.getIncrementBy();
+        Number start = sequence.getMinValue();
+        Number maxValue = sequence.getMaxValue();
+        Number minValue = sequence.getMinValue();
+
+        StringBuilder sb = new StringBuilder();
+        if (forUpdate) {
+            sb.append("ALTER SEQUENCE ");
+        } else {
+            sb.append("CREATE SEQUENCE ");
+        }
+        sb.append(sequence.getFullyQualifiedName(DBPEvaluationContext.DDL)).append(" ");
+        if (incrementBy != null) {
+            sb.append("INCREMENT BY ").append(incrementBy).append(" ");
+        }
+        if (start != null) {
+            sb.append("START WITH ").append(start).append(" ");
+        }
+        if (maxValue != null) {
+            sb.append("MAXVALUE ").append(maxValue).append(" ");
+        }
+        if (minValue != null) {
+            sb.append("MINVALUE ").append(minValue).append(" ");
+        }
+        return sb.toString();
     }
 }
