@@ -83,4 +83,9 @@ public class DamengSQLDialect extends GenericSQLDialect {
     public String getDualTableName() {
         return "DUAL";
     }
+
+    @Override
+    public MultiValueInsertMode getDefaultMultiValueInsertMode() {
+        return MultiValueInsertMode.INSERT_ALL;
+    }
 }
