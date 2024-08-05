@@ -213,6 +213,16 @@ public class DamengMetaModel extends GenericMetaModel {
     }
 
     @Override
+    public boolean supportsUniqueKeys() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsCheckConstraints() {
+        return true;
+    }
+
+    @Override
     public List<? extends GenericTrigger> loadTriggers(DBRProgressMonitor monitor, GenericStructContainer container, GenericTableBase table) throws DBException {
         if (table == null) {
             return Collections.emptyList();

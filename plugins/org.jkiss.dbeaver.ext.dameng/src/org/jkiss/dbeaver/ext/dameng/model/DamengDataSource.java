@@ -98,6 +98,9 @@ public class DamengDataSource extends GenericDataSource {
         if (valueType == Types.JAVA_OBJECT && DamengConstants.INTERVAL_TYPES.contains(typeName)) {
             return DBPDataKind.DATETIME;
         }
+        if ("VARCHAR2".equals(typeName)) {
+            return DBPDataKind.STRING;
+        }
         return GenericDataSource.getDataKind(typeName, valueType);
 
     }
