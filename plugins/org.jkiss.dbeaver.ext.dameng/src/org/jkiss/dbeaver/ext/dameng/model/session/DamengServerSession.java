@@ -31,15 +31,19 @@ import java.util.Objects;
  */
 public class DamengServerSession extends AbstractServerSession {
 
+    private static final String CAT_SESSION = "Session";
+    private static final String CAT_SQL = "SQL";
+    private static final String CAT_CLIENT = "Client";
+
     private long id;
 
-    private String instanceName;
+    private Integer sqlId;
 
     private String user;
 
     private String schema;
 
-    private String status;
+    private String runStatus;
 
     private String state;
 
@@ -59,13 +63,17 @@ public class DamengServerSession extends AbstractServerSession {
 
     private String clientVersion;
 
+    private String clientInfo;
+
+    private String clientIdentifier;
+
+    private Long threadId;
 
     public DamengServerSession(JDBCResultSet dbResult) {
         this.id = JDBCUtils.safeGetLong(dbResult, "SESS_ID");
-        this.instanceName = JDBCUtils.safeGetString(dbResult, "INSTANCE_NAME");
         this.user = JDBCUtils.safeGetString(dbResult, "USER_NAME");
         this.schema = JDBCUtils.safeGetString(dbResult, "CURR_SCH");
-        this.status = JDBCUtils.safeGetString(dbResult, "RUN_STATUS");
+        this.runStatus = JDBCUtils.safeGetString(dbResult, "RUN_STATUS");
         this.state = JDBCUtils.safeGetString(dbResult, "STATE");
         this.sql = JDBCUtils.safeGetString(dbResult, "SQL_TEXT");
         this.isolationLevel = JDBCTransactionIsolation.getByCode(JDBCUtils.safeGetInt(dbResult, "ISO_LEVEL") + 1);
@@ -75,6 +83,10 @@ public class DamengServerSession extends AbstractServerSession {
         this.clientIp = JDBCUtils.safeGetString(dbResult, "CLNT_IP");
         this.createTime = JDBCUtils.safeGetTimestamp(dbResult, "CREATE_TIME");
         this.clientVersion = JDBCUtils.safeGetString(dbResult, "CLNT_VER");
+        this.clientInfo = JDBCUtils.safeGetString(dbResult, "CLIENT_INFO");
+        this.clientIdentifier = JDBCUtils.safeGetString(dbResult, "CLIENT_IDENTIFIER");
+        this.sqlId = JDBCUtils.safeGetInteger(dbResult, "SQL_ID");
+        this.threadId = JDBCUtils.safeGetLong(dbResult, "THRD_ID");
     }
 
     @Override
@@ -82,69 +94,89 @@ public class DamengServerSession extends AbstractServerSession {
         return sql;
     }
 
-    @Property(viewable = true, order = 1)
+    @Property(category = CAT_SESSION, viewable = true, order = 1)
     public long getId() {
         return id;
     }
 
-    @Property(viewable = true)
-    public String getInstanceName() {
-        return instanceName;
-    }
-
-    @Property(viewable = true, order = 2)
+    @Property(category = CAT_SESSION, viewable = true, order = 2)
     public String getUser() {
         return user;
     }
 
-    @Property(viewable = true, order = 3)
+    @Property(category = CAT_SESSION, viewable = true, order = 3)
     public String getSchema() {
         return schema;
     }
 
-    @Property(viewable = true, order = 4)
-    public String getStatus() {
-        return status;
+    @Property(category = CAT_SESSION, viewable = true, order = 4)
+    public String getRunStatus() {
+        return runStatus;
     }
 
-    @Property(viewable = true, order = 5)
+    @Property(category = CAT_SESSION, viewable = true, order = 5)
     public String getState() {
         return state;
     }
 
-    @Property(viewable = true, order = 6)
+    @Property(category = CAT_SESSION, viewable = true, order = 6)
     public Timestamp getCreateTime() {
         return createTime;
     }
 
-    @Property(viewable = true, order = 7)
+    @Property(category = CAT_SESSION, viewable = true, order = 7)
     public String getIsolationLevel() {
         return isolationLevel.getTitle();
     }
 
-    @Property(viewable = true, order = 7)
+    @Property(category = CAT_CLIENT, viewable = true, order = 7)
     public String getAppName() {
         return appName;
     }
 
-    @Property(viewable = true, order = 8)
+    @Property(category = CAT_CLIENT, viewable = true, order = 8)
     public String getClientHost() {
         return clientHost;
     }
 
-    @Property(viewable = true, order = 9)
+    @Property(category = CAT_CLIENT, viewable = true, order = 9)
     public String getClientType() {
         return clientType;
     }
 
-    @Property(viewable = true, order = 10)
+    @Property(category = CAT_CLIENT, viewable = true, order = 10)
     public String getClientIp() {
         return clientIp;
     }
 
-    @Property(viewable = true, order = 11)
+    @Property(category = CAT_CLIENT, viewable = true, order = 11)
     public String getClientVersion() {
         return clientVersion;
+    }
+
+    @Property(category = CAT_CLIENT, order = 12)
+    public String getClientInfo() {
+        return clientInfo;
+    }
+
+    @Property(category = CAT_CLIENT, order = 13)
+    public String getClientIdentifier() {
+        return clientIdentifier;
+    }
+
+    @Property(category = CAT_SQL, order = 14)
+    public Integer getSqlId() {
+        return sqlId;
+    }
+
+    @Property(category = CAT_SQL, order = 15)
+    public Long getThreadId() {
+        return threadId;
+    }
+
+    @Override
+    public Object getActiveQueryId() {
+        return sqlId;
     }
 
     @Override
