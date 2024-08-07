@@ -17,11 +17,10 @@
 
 package org.jkiss.dbeaver.ext.dameng.model.session;
 
+import org.jkiss.dbeaver.DBDatabaseException;
 import org.jkiss.dbeaver.DBException;
 import org.jkiss.dbeaver.ext.dameng.model.DamengDataSource;
 import org.jkiss.dbeaver.model.DBPDataSource;
-import org.jkiss.dbeaver.model.admin.sessions.DBAServerSessionDetails;
-import org.jkiss.dbeaver.model.admin.sessions.DBAServerSessionDetailsProvider;
 import org.jkiss.dbeaver.model.admin.sessions.DBAServerSessionManager;
 import org.jkiss.dbeaver.model.admin.sessions.DBAServerSessionManagerSQL;
 import org.jkiss.dbeaver.model.exec.DBCSession;
@@ -75,7 +74,7 @@ public class DamengSessionManager implements DBAServerSessionManager<DamengServe
                 dbStat.execute();
             }
         } catch (SQLException e) {
-            throw new DBException(e, session.getDataSource());
+            throw new DBDatabaseException(e, session.getDataSource());
         }
     }
 
@@ -86,7 +85,7 @@ public class DamengSessionManager implements DBAServerSessionManager<DamengServe
 
     @Override
     public String generateSessionReadQuery(Map<String, Object> options) {
-        return "SELECT * FROM GV$SESSIONS";
+        return "SELECT * FROM V$SESSIONS";
     }
 
 }

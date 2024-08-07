@@ -234,7 +234,8 @@
                         </items>
                     </folder>
                 </folder>
-                <folder label="%tree.administer.node.name" icon="#folder_admin" description="Maintenance/Settings">
+                <folder id="maintenanceSettings" label="%tree.administer.node.name" icon="#folder_admin"
+                        description="Maintenance/Settings">
                     <treeContribution category="connectionEditor"/>
                 </folder>
             </tree>
