@@ -213,6 +213,16 @@ public class DamengMetaModel extends GenericMetaModel {
     }
 
     @Override
+    public boolean supportsUniqueKeys() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsCheckConstraints() {
+        return true;
+    }
+
+    @Override
     public List<? extends GenericTrigger> loadTriggers(DBRProgressMonitor monitor, GenericStructContainer container, GenericTableBase table) throws DBException {
         if (table == null) {
             return Collections.emptyList();
@@ -309,6 +319,12 @@ public class DamengMetaModel extends GenericMetaModel {
             case UNKNOWN -> null;
         };
         return DamengUtils.getDDL(monitor, sourceObject, objectType, sourceObject.getContainer().getName());
+    }
+
+    @Override
+    public JDBCStatement prepareTableLoadStatement(JDBCSession session, GenericStructContainer owner, GenericTableBase object, String objectName) throws SQLException {
+
+        return super.prepareTableLoadStatement(session, owner, object, objectName);
     }
 
     @Override

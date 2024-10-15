@@ -22,6 +22,8 @@ import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.DBException;
 import org.jkiss.dbeaver.ext.dameng.DamengConstants;
 import org.jkiss.dbeaver.ext.generic.model.GenericDataSource;
+import org.jkiss.dbeaver.ext.generic.model.GenericTable;
+import org.jkiss.dbeaver.ext.generic.model.TableCache;
 import org.jkiss.dbeaver.ext.generic.model.meta.GenericMetaModel;
 import org.jkiss.dbeaver.model.DBPDataKind;
 import org.jkiss.dbeaver.model.DBPDataSourceContainer;
@@ -33,7 +35,9 @@ import org.jkiss.dbeaver.model.exec.jdbc.JDBCStatement;
 import org.jkiss.dbeaver.model.impl.jdbc.JDBCDataSourceInfo;
 import org.jkiss.dbeaver.model.impl.jdbc.JDBCExecutionContext;
 import org.jkiss.dbeaver.model.impl.jdbc.JDBCRemoteInstance;
+import org.jkiss.dbeaver.model.impl.jdbc.cache.JDBCCompositeCache;
 import org.jkiss.dbeaver.model.impl.jdbc.cache.JDBCObjectCache;
+import org.jkiss.dbeaver.model.impl.jdbc.cache.JDBCStructCache;
 import org.jkiss.dbeaver.model.meta.Association;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
 import org.jkiss.dbeaver.model.struct.DBSObject;
@@ -41,6 +45,7 @@ import org.jkiss.dbeaver.model.struct.DBSObject;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Shengkai Bai
@@ -129,6 +134,44 @@ public class DamengDataSource extends GenericDataSource {
 
     public TablespaceCache getTablespaceCache() {
         return tablespaceCache;
+    }
+
+    static class ConstraintCache extends JDBCCompositeCache<DamengSchema,DamengTable,DamengTableConstraint,DamengTableColumn> {
+        protected ConstraintCache(TableCache tableCache, Class<DamengTable> parentType, Object parentColumnName, Object objectColumnName) {
+//            super(tableCache, DB2Table.class, "TABNAME", "CONSTNAME");
+
+            super(tableCache, DamengTable.class, parentColumnName, objectColumnName);
+        }
+
+        @Override
+        protected JDBCStatement prepareObjectsStatement(JDBCSession session, DamengSchema damengSchema, DamengTable forParent) throws SQLException {
+            return null;
+        }
+
+        @Override
+        protected DamengTableConstraint fetchObject(JDBCSession session, DamengSchema damengSchema, DamengTable damengTable, String childName, JDBCResultSet resultSet) throws SQLException, DBException {
+            return null;
+        }
+
+        @Override
+        protected DamengTableColumn[] fetchObjectRow(JDBCSession session, DamengTable damengTable, DamengTableConstraint forObject, JDBCResultSet resultSet) throws SQLException, DBException {
+            return new DamengTableColumn[0];
+        }
+
+        @Override
+        protected void cacheChildren(DBRProgressMonitor monitor, DamengTableConstraint object, List<DamengTableColumn> children) {
+
+        }
+
+//        @Override
+//        protected JDBCStatement prepareObjectsStatement(JDBCSession session, DamengDataSource damengDataSource) throws SQLException {
+//            return session.prepareStatement("");
+//        }
+//
+//        @Override
+//        protected DamengTableConstraint fetchObject(JDBCSession session, DamengDataSource damengDataSource, JDBCResultSet resultSet) throws SQLException, DBException {
+//            return null;
+//        }
     }
 
     static class RoleCache extends JDBCObjectCache<DamengDataSource, DamengRole> {

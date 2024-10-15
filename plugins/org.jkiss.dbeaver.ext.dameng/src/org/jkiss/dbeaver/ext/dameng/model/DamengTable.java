@@ -18,12 +18,13 @@
 package org.jkiss.dbeaver.ext.dameng.model;
 
 import org.jkiss.code.NotNull;
-import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.DBException;
+import org.jkiss.dbeaver.ext.dameng.DamengConstants;
 import org.jkiss.dbeaver.ext.generic.model.GenericStructContainer;
 import org.jkiss.dbeaver.ext.generic.model.GenericTable;
 import org.jkiss.dbeaver.ext.generic.model.GenericTableTrigger;
 import org.jkiss.dbeaver.ext.generic.model.GenericTrigger;
+import org.jkiss.dbeaver.ext.generic.model.GenericUniqueKey;
 import org.jkiss.dbeaver.model.DBPObjectStatistics;
 import org.jkiss.dbeaver.model.DBUtils;
 import org.jkiss.dbeaver.model.exec.jdbc.JDBCPreparedStatement;
@@ -46,6 +47,42 @@ public class DamengTable extends GenericTable implements DBPObjectStatistics {
 
     public DamengTable(GenericStructContainer container, String tableName, String tableType, JDBCResultSet dbResult) {
         super(container, tableName, tableType, dbResult);
+    }
+
+    @Override
+    public List<GenericUniqueKey> getConstraints(DBRProgressMonitor monitor) throws DBException {
+        try (JDBCSession session = DBUtils.openMetaSession(monitor, this, "Read table Constraints")) {
+            try (JDBCPreparedStatement dbStat = session.prepareStatement("SELECT " +
+                    "CONS.ID, " +
+                    "CONS_OBJ.NAME, " +
+                    "CONS.TYPE$ " +
+                    "FROM " +
+                    "SYSOBJECTS CONS_OBJ, " +
+                    "SYSCONS CONS, " +
+                    "SYSOBJECTS TAB_OBJ " +
+                    "WHERE " +
+                    "CONS_OBJ.ID = CONS.ID " +
+                    "AND CONS_OBJ.PID = TAB_OBJ.ID " +
+                    "AND CONS_OBJ.SUBTYPE$ = 'CONS' " +
+                    "AND TAB_OBJ.NAME = ?")) {
+                dbStat.setString(1, this.getName());
+                List<GenericUniqueKey> result = new ArrayList<>();
+                try (JDBCResultSet dbResult = dbStat.executeQuery()) {
+                    while (dbResult.next()) {
+                        String type = JDBCUtils.safeGetString(dbResult, DamengConstants.TYPE$);
+                        result.add(new DamengTableConstraint(this,
+                                JDBCUtils.safeGetString(dbResult, DamengConstants.NAME),
+                                null,
+                                DamengTableConstraint.getConstraintType(type),
+                                true));
+                    }
+                }
+                return result;
+            }
+
+        } catch (SQLException e) {
+            throw new DBException("Read table Constraints failed", e);
+        }
     }
 
     public DamengTable(GenericStructContainer container, String tableName, String tableCatalogName, String tableSchemaName) {
