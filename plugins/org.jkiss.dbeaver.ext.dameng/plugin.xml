@@ -192,6 +192,31 @@
                         </folder>
                     </items>
                 </folder>
+                <folder id="globalMetadataObjects" label="%tree.global_metadata.node.name" icon="#logical"
+                        description="Global metadata objects">
+                    <!--                    <folder type="org.jkiss.dbeaver.ext.oracle.model.OracleDataType" label="%tree.types.node.name"-->
+                    <!--                            icon="#data_types" description="Types">-->
+                    <!--                        <items label="%tree.data_type.node.name" path="type" property="localDataTypes"-->
+                    <!--                               icon="#data_type"/>-->
+                    <!--                    </folder>-->
+                    <folder type="org.jkiss.dbeaver.ext.dameng.model.DamengSynonym"
+                            label="%tree.public_synonyms.node.name" icon="#synonyms" description="Public synonyms">
+                        <items label="%tree.synonym.node.name" path="synonym" property="synonyms"
+                               icon="#synonym"/>
+                    </folder>
+                    <!--                    <folder type="org.jkiss.dbeaver.ext.oracle.model.OracleDBLink"-->
+                    <!--                            label="%tree.public_database_links.node.name" icon="#links"-->
+                    <!--                            description="Public database links">-->
+                    <!--                        <items label="%tree.database_link.node.name" path="databaseLink" property="publicDatabaseLinks"-->
+                    <!--                               icon="#link"/>-->
+                    <!--                    </folder>-->
+                    <!--                    <folder type="org.jkiss.dbeaver.ext.oracle.model.OracleRecycledObject"-->
+                    <!--                            label="%tree.user_recycle_bin.node.name" icon="#recycle_bin"-->
+                    <!--                            description="Current user's recycle bin">-->
+                    <!--                        <items label="%tree.recycled_object.node.name" path="object" property="userRecycledObjects"-->
+                    <!--                               icon="#recycle_bin"/>-->
+                    <!--                    </folder>-->
+                </folder>
                 <folder type="org.jkiss.dbeaver.ext.dameng.model.DamengTablespace"
                         label="%tree.tablespaces.node.name" icon="#tablespaces" description="Tablespaces">
                     <items label="%tree.tablespace.node.name" path="tablespace" property="tablespaces"

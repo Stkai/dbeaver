@@ -22,6 +22,7 @@ import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.DBException;
 import org.jkiss.dbeaver.ext.dameng.DamengConstants;
 import org.jkiss.dbeaver.ext.generic.model.GenericDataSource;
+import org.jkiss.dbeaver.ext.generic.model.GenericSynonym;
 import org.jkiss.dbeaver.ext.generic.model.meta.GenericMetaModel;
 import org.jkiss.dbeaver.model.DBPDataKind;
 import org.jkiss.dbeaver.model.DBPDataSourceContainer;
@@ -33,6 +34,7 @@ import org.jkiss.dbeaver.model.exec.jdbc.JDBCStatement;
 import org.jkiss.dbeaver.model.impl.jdbc.JDBCDataSourceInfo;
 import org.jkiss.dbeaver.model.impl.jdbc.JDBCExecutionContext;
 import org.jkiss.dbeaver.model.impl.jdbc.JDBCRemoteInstance;
+import org.jkiss.dbeaver.model.impl.jdbc.JDBCUtils;
 import org.jkiss.dbeaver.model.impl.jdbc.cache.JDBCObjectCache;
 import org.jkiss.dbeaver.model.meta.Association;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
@@ -52,6 +54,8 @@ public class DamengDataSource extends GenericDataSource {
     private final UserCache userCache = new UserCache();
 
     private final RoleCache roleCache = new RoleCache();
+
+    private final SynonymCache synonymCache = new SynonymCache();
 
     public DamengDataSource(DBRProgressMonitor monitor, DBPDataSourceContainer container, GenericMetaModel metaModel) throws DBException {
         super(monitor, container, metaModel, new DamengSQLDialect());
@@ -81,10 +85,17 @@ public class DamengDataSource extends GenericDataSource {
         return new JDBCDataSourceInfo(metaData);
     }
 
+    @Association
+    @Override
+    public Collection<DamengSynonym> getSynonyms(DBRProgressMonitor monitor) throws DBException {
+        return synonymCache.getAllObjects(monitor, this);
+    }
+
     @Override
     public DBSObject refreshObject(@NotNull DBRProgressMonitor monitor) throws DBException {
         super.refreshObject(monitor);
         tablespaceCache.clearCache();
+        synonymCache.clearCache();
         return this;
     }
 
@@ -198,6 +209,29 @@ public class DamengDataSource extends GenericDataSource {
         @Override
         protected DamengTablespace fetchObject(@NotNull JDBCSession session, @NotNull DamengDataSource dataSource, @NotNull JDBCResultSet resultSet) throws SQLException, DBException {
             return new DamengTablespace(dataSource, resultSet);
+        }
+    }
+
+    static class SynonymCache extends JDBCObjectCache<DamengDataSource, DamengSynonym> {
+
+        @Override
+        protected JDBCStatement prepareObjectsStatement(JDBCSession session, DamengDataSource damengDataSource) throws SQLException {
+            return session.prepareStatement("SELECT\n" +
+                    "ID,\n" +
+                    "NAME,\n" +
+                    "INFO6\n" +
+                    "FROM\n" +
+                    "SYSOBJECTS\n" +
+                    "WHERE\n" +
+                    "TYPE$ = 'DSYNOM'\n" +
+                    "AND INFO1 = 1");
+        }
+
+        @Override
+        protected DamengSynonym fetchObject(JDBCSession session, DamengDataSource damengDataSource, JDBCResultSet resultSet) throws SQLException, DBException {
+            String name = JDBCUtils.safeGetString(resultSet, "NAME");
+            String description = JDBCUtils.safeGetString(resultSet, "INFO6");
+            return new DamengSynonym(damengDataSource, name, description);
         }
     }
 }

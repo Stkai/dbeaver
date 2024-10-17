@@ -132,6 +132,29 @@ public class DamengMetaModel extends GenericMetaModel {
     }
 
     @Override
+    public boolean supportsSynonyms(GenericDataSource dataSource) {
+        return true;
+    }
+
+    @Override
+    public JDBCStatement prepareSynonymsLoadStatement(JDBCSession session, GenericStructContainer container) throws SQLException {
+        return session.prepareStatement("SELECT\n" +
+                "ID,\n" +
+                "NAME,\n" +
+                "INFO6\n" +
+                "FROM\n" +
+                "SYSOBJECTS\n" +
+                "WHERE\n" +
+                "TYPE$ = 'DSYNOM'\n" +
+                "AND INFO1 = 1");
+    }
+
+    @Override
+    public GenericSynonym createSynonymImpl(JDBCSession session, GenericStructContainer container, JDBCResultSet dbResult) throws DBException {
+        return super.createSynonymImpl(session, container, dbResult);
+    }
+
+    @Override
     public boolean supportsDatabaseTriggers(@NotNull GenericDataSource dataSource) {
         return true;
     }
